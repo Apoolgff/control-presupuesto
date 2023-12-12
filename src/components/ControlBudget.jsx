@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar'
 import 'react-circular-progressbar/dist/styles.css'
 
-const ControlBudget = ({ expenses, budget }) => {
+const ControlBudget = ({ expenses, setExpenses, budget, setBudget, setIsValidBudget }) => {
     const [percentage, setPercentage] = useState(0)
     const [available, setAvailable] = useState(0)
     const [spent, setSpent] = useState(0)
@@ -29,30 +29,46 @@ const ControlBudget = ({ expenses, budget }) => {
         })
     }
 
+    const handleResetApp = () =>{
+        const res = confirm('Confirmar reinicio de presupuesto y gastos?');
+
+        if(res){
+            setExpenses([])
+            setBudget(0)
+            setIsValidBudget(false)
+        }
+    }
+
     return (
         <div className='contenedor-presupuesto contenedor sombra dos-columnas'>
             <div>
                 <CircularProgressbar
                     styles={buildStyles({
-                        pathColor: '#3B82F6',
+                        pathColor: percentage > 100 ? '#DC2626' : '#3B82F6',
                         trailColor: '#F5F5F5',
-                        textColor: '#3B82F6'
+                        textColor: percentage > 100 ? '#DC2626' : '#3B82F6'
                     })}
                     value={percentage}
                     text={`${percentage}% Gastado`}
                 />
             </div>
 
-            <div>
-                <p className='contenido-presupuesto'>
+            <div className='contenido-presupuesto'>
+                <button className='reset-app'
+                type='button'
+                onClick={handleResetApp}
+                >
+                    Resetear Presupuesto
+                </button>
+                <p>
                     <span>Presupuesto: </span> {formatCurrency(budget)}
                 </p>
 
-                <p className='contenido-presupuesto'>
+                <p className={`${available < 0 ? 'negativo' : ''}`}>
                     <span>Disponible: </span> {formatCurrency(available)}
                 </p>
 
-                <p className='contenido-presupuesto'>
+                <p>
                     <span>Gastado: </span> {formatCurrency(spent)}
                 </p>
             </div>

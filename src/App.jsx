@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Header from './components/Header'
 import Modal from './components/Modal'
+import Filters from './components/Filters'
 import ExpensesList from './components/ExpensesList'
 import { generateId } from './helpers'
 import IconNewSpent from './assets/img/nuevo-gasto.svg'
@@ -12,6 +13,8 @@ function App() {
   const [modal, setModal] = useState(false)
   const [animarModal, setAnimarModal] = useState(false)
   const [spentEdit, setSpentEdit] = useState({})
+  const [filter, setFilter] = useState('')
+  const [filterExpenses, setFilterExpenses] = useState([])
 
   useEffect(() => {
     if (Object.keys(spentEdit).length > 0) {
@@ -23,17 +26,24 @@ function App() {
     }
   }, [spentEdit])
 
-  useEffect(()=>{
+  useEffect(() => {
     localStorage.setItem('budget', budget ?? 0)
   }, [budget])
 
-  useEffect(()=>{
+  useEffect(() => {
     localStorage.setItem('expenses', JSON.stringify(expenses) ?? [])
   }, [expenses])
 
   useEffect(()=>{
+    if(filter){
+      const filterExpenses = expenses.filter(spent => spent.category === filter)
+      setFilterExpenses(filterExpenses)
+    }
+  }, [filter])
+
+  useEffect(() => {
     const budgetLS = Number(localStorage.getItem('budget')) ?? 0;
-    if(budgetLS > 0){
+    if (budgetLS > 0) {
       setIsValidBudget(true)
     }
   }, [])
@@ -48,12 +58,12 @@ function App() {
   }
 
   const saveExpenses = spent => {
-    if(spent.id){
-      const updatedExpenses = expenses.map( spentState => spentState.id === spent.id
+    if (spent.id) {
+      const updatedExpenses = expenses.map(spentState => spentState.id === spent.id
         ? spent : spentState)
-        setExpenses(updatedExpenses)
-        setSpentEdit({})
-    }else{
+      setExpenses(updatedExpenses)
+      setSpentEdit({})
+    } else {
       spent.id = generateId();
       spent.date = Date.now();
       setExpenses([...expenses, spent])
@@ -67,7 +77,7 @@ function App() {
   }
 
   const deleteExpenses = id => {
-    const updatedExpenses = expenses.filter( spent => spent.id !== id);
+    const updatedExpenses = expenses.filter(spent => spent.id !== id);
     setExpenses(updatedExpenses)
   }
 
@@ -75,6 +85,7 @@ function App() {
     <div className={modal ? 'fijar' : ''}>
       <Header
         expenses={expenses}
+        setExpenses={setExpenses}
         budget={budget}
         setBudget={setBudget}
         isValidBudget={isValidBudget}
@@ -84,10 +95,16 @@ function App() {
       {isValidBudget && (
         <>
           <main>
+            <Filters
+              filter={filter}
+              setFilter={setFilter}
+            />
             <ExpensesList
               expenses={expenses}
               setSpentEdit={setSpentEdit}
               deleteExpenses={deleteExpenses}
+              filter={filter}
+              filterExpenses={filterExpenses}
             />
           </main>
           <div className='nuevo-gasto'>
