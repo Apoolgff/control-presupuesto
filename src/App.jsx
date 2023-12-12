@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from './components/Header'
 import Modal from './components/Modal'
 import ExpensesList from './components/ExpensesList'
@@ -6,15 +6,41 @@ import { generateId } from './helpers'
 import IconNewSpent from './assets/img/nuevo-gasto.svg'
 
 function App() {
-  const [expenses, setExpenses] = useState([])
-  const [budget, setBudget] = useState(0)
+  const [expenses, setExpenses] = useState(localStorage.getItem('expenses') ? JSON.parse(localStorage.getItem('expenses')) : [])
+  const [budget, setBudget] = useState(Number(localStorage.getItem('budget')) ?? 0)
   const [isValidBudget, setIsValidBudget] = useState(false)
   const [modal, setModal] = useState(false)
   const [animarModal, setAnimarModal] = useState(false)
+  const [spentEdit, setSpentEdit] = useState({})
 
+  useEffect(() => {
+    if (Object.keys(spentEdit).length > 0) {
+      setModal(true)
+
+      setTimeout(() => {
+        setAnimarModal(true)
+      }, 500)
+    }
+  }, [spentEdit])
+
+  useEffect(()=>{
+    localStorage.setItem('budget', budget ?? 0)
+  }, [budget])
+
+  useEffect(()=>{
+    localStorage.setItem('expenses', JSON.stringify(expenses) ?? [])
+  }, [expenses])
+
+  useEffect(()=>{
+    const budgetLS = Number(localStorage.getItem('budget')) ?? 0;
+    if(budgetLS > 0){
+      setIsValidBudget(true)
+    }
+  }, [])
 
   const handleNewSpent = () => {
     setModal(true)
+    setSpentEdit({})
 
     setTimeout(() => {
       setAnimarModal(true)
@@ -22,15 +48,27 @@ function App() {
   }
 
   const saveExpenses = spent => {
-    spent.id = generateId();
-    spent.date = Date.now();
-    setExpenses([...expenses, spent])
+    if(spent.id){
+      const updatedExpenses = expenses.map( spentState => spentState.id === spent.id
+        ? spent : spentState)
+        setExpenses(updatedExpenses)
+        setSpentEdit({})
+    }else{
+      spent.id = generateId();
+      spent.date = Date.now();
+      setExpenses([...expenses, spent])
+    }
 
     setAnimarModal(false)
 
     setTimeout(() => {
       setModal(false)
     }, 500);
+  }
+
+  const deleteExpenses = id => {
+    const updatedExpenses = expenses.filter( spent => spent.id !== id);
+    setExpenses(updatedExpenses)
   }
 
   return (
@@ -45,11 +83,13 @@ function App() {
 
       {isValidBudget && (
         <>
-        <main>
-          <ExpensesList 
-            expenses={expenses}
-          />
-        </main>
+          <main>
+            <ExpensesList
+              expenses={expenses}
+              setSpentEdit={setSpentEdit}
+              deleteExpenses={deleteExpenses}
+            />
+          </main>
           <div className='nuevo-gasto'>
             <img
               src={IconNewSpent}
@@ -66,6 +106,8 @@ function App() {
           animarModal={animarModal}
           setAnimarModal={setAnimarModal}
           saveExpenses={saveExpenses}
+          spentEdit={spentEdit}
+          setSpentEdit={setSpentEdit}
         />}
 
     </div>

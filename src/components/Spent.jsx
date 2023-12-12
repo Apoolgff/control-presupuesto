@@ -26,24 +26,26 @@ const iconDictionary = {
     subs: IconSubs
 }
 
-const Spent = ({ spent }) => {
+const Spent = ({ spent, setSpentEdit, deleteExpenses }) => {
     const { category, name, quantity, id, date } = spent;
 
-    const leadingActions = () =>(
+    const leadingActions = () => (
         <LeadingActions>
-            <SwipeAction onClick={() => console.log('editar')}>
+            <SwipeAction onClick={() => setSpentEdit(spent)}>
                 Editar
             </SwipeAction>
         </LeadingActions>
     )
 
-    const trailingActions = () =>{
+    const trailingActions = () => (
         <TrailingActions>
-            <SwipeAction onClick={()=> console.log('eliminar')}>
+            <SwipeAction onClick={() => deleteExpenses(id)}
+                destructive={true}
+            >
                 Eliminar
             </SwipeAction>
         </TrailingActions>
-    }
+    )
 
     return (
         <SwipeableList>
