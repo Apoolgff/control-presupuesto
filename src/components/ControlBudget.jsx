@@ -5,7 +5,7 @@ const ControlBudget = ({expenses, budget}) => {
     const [spent, setSpent] = useState(0)
 
     useEffect( ()=> {
-        const totalSpent = spent.reduce( (total, spent)=> spent.quantity = total, 0)
+        const totalSpent = expenses.reduce( (total, spent)=> spent.quantity + total, 0)
         const totalAvailable = budget - totalSpent;
 
         setAvailable(totalAvailable)

@@ -30,19 +30,19 @@ const Spent = ({ spent }) => {
     const { category, name, quantity, id, date } = spent;
 
     const leadingActions = () =>(
-        <leadingActions>
+        <LeadingActions>
             <SwipeAction onClick={() => console.log('editar')}>
                 Editar
             </SwipeAction>
-        </leadingActions>
+        </LeadingActions>
     )
 
     const trailingActions = () =>{
-        <trailingActions>
+        <TrailingActions>
             <SwipeAction onClick={()=> console.log('eliminar')}>
                 Eliminar
             </SwipeAction>
-        </trailingActions>
+        </TrailingActions>
     }
 
     return (
