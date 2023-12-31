@@ -5,6 +5,7 @@ import Filters from './components/Filters'
 import ExpensesList from './components/ExpensesList'
 import { generateId } from './helpers'
 import IconNewSpent from './assets/img/nuevo-gasto.svg'
+import Footer from './components/Footer'
 
 function App() {
   const [expenses, setExpenses] = useState(localStorage.getItem('expenses') ? JSON.parse(localStorage.getItem('expenses')) : [])
@@ -82,6 +83,7 @@ function App() {
   }
 
   return (
+    <>
     <div className={modal ? 'fijar' : ''}>
       <Header
         expenses={expenses}
@@ -128,6 +130,8 @@ function App() {
         />}
 
     </div>
+    <Footer />
+    </>
   )
 }
 
