@@ -46,7 +46,7 @@ const Footer = () => {
           <FaInstagram />
         </SocialLink>
       </IconContainer>
-      <p>Paolo Ferro</p>
+      <p>Paolo</p>
     </FooterContainer>
   );
 };
